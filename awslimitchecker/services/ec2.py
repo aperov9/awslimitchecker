@@ -642,7 +642,9 @@ class _Ec2Service(_AwsService):
         logger.debug("Getting usage for EC2 VPC resources")
         sg_count = 0
         rules_per_sg = defaultdict(int)
-        for sg in self.resource_conn.security_groups.all():
+        sgs = self.resource_conn.security_groups.all()
+        account_sgs = sgs.filter(Filters=[{'Name': 'owner-id','Values': [self.current_account_id]}])
+        for sg in account_sgs:
             if sg.vpc_id is None:
                 continue
             sg_count += 1
